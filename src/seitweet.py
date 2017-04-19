@@ -9,7 +9,7 @@ class SeiyuuTweetApp(object):
 		self.auth_wrapper = TwitterAuthWrapper(credentials_file)
 		self.api = tweepy.API(self.auth_wrapper.get_twitter_auth())
 
-	def get_all_tweets(self, user):
+	def get_all_tweets(self, user, *args, **kwargs):
 		alltweets = []
 		new_tweets = self.api.user_timeline(screen_name=user, count=200)
 		alltweets.extend(new_tweets)
