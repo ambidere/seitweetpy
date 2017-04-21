@@ -1,4 +1,4 @@
-import sys, inspect
+import sys, inspect, csv
 def get_action_class(action):
 	for name, class_name in inspect.getmembers(sys.modules[__name__]):
 		if issubclass(class_name, TweetActions) and class_name.name == action:
@@ -17,25 +17,26 @@ class TweetActions(object):
 		self.assert_arguments_valid()
 
 	def assert_arguments_valid(self):
-		return True
+		pass
 
-	def performAction(self):
+	def perform_action(self):
 		pass
 
 class PrintCSVAction(TweetActions):
 	name = "csv"
 	"""prints tweets fetched to csv"""
 	def __init__(self, tweets, **kwargs):
-		super(PrintCSV, self).__init__(tweets)
+		super(PrintCSVAction, self).__init__(tweets, **kwargs)
+		self.fields = ["id","created_at","text"]
 		
-	def performAction(self):
-		with open(self.output_file, 'wb') as f:
+	def perform_action(self):
+		with open(self.options.output, 'wb') as f:
 			writer = csv.writer(f)
-			writer.writerow(["id","created_at","text"])
+			writer.writerow(self.fields)
 			writer.writerows(self._build_csv_rows())
 
 	def assert_arguments_valid(self):
-		return True
+		pass
 
 	def _build_csv_rows(self):
 		rows = []
@@ -44,6 +45,8 @@ class PrintCSVAction(TweetActions):
 			for field in self.fields:
 				try:
 					value = getattr(tweet, field, '')
+					if field == 'text':
+						value = value.encode('utf-8')
 					row.append(value)
 				except ValueError, e:
 					print "field not found"

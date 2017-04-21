@@ -7,13 +7,12 @@ import csv
 from optparse import OptionParser
 
 from src.seitweet import SeiTweetApp
-from src.actions import get_action_class
 
 opt_parse = OptionParser()
 opt_parse.add_option("-c", "--credentials", dest="credentials_file",
                   help="File containing credentials for Twitter API", metavar="FILE")
 opt_parse.add_option("-a", "--action", dest="action",
-                  help="Action", metavar="ACTION")
+                  help="Action", metavar="ACTION", default="default")
 opt_parse.add_option("-u", "--user", dest="user",
                   help="User", metavar="TWITTER_USER")
 opt_parse.add_option("-o", "--output", dest="output",
@@ -26,6 +25,5 @@ opt_parse.add_option("-s", "--consumer_secret", dest="consumer_secret",
 (options, args) = opt_parse.parse_args()
 
 if __name__ == '__main__':
-	# action = get_action_class(options.action)
-	# print action([], output_file=options.output)
-	app = SeiTweetApp(options)
+    app = SeiTweetApp(options)
+    app.get_all_tweets(options.user).do_action()
