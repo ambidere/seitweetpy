@@ -1,9 +1,10 @@
-import sys, inspect, csv
+import os, sys, inspect, csv, time
 import exceptions
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import matplotlib.transforms as mtransforms
 
 def get_post_action_class(post_actions):
 	if len(post_actions) <= 0:
@@ -90,24 +91,84 @@ class TopMentionsAction(TweetActions):
 	name = "top_mentions"
 	def __init__(self, tweets, options, **kwargs):
 		super(TopMentionsAction, self).__init__(tweets, options, **kwargs)
-		self.fontProp = fm.FontProperties(fname='./resources/default.ttf')
+		self.user = options.user
+		self.fontProp = fm.FontProperties(fname=os.path.abspath('./resources/default.otf'))
 
 	def assert_arguments_valid(self, options):
 		pass
 
-	def perform_action(self):
-		tweets_data = pd.DataFrame(self.tweets)
-		tweets_data['text'] = map(lambda tweet: tweet.text.encode('utf-8'), self.tweets)
-		user_mentions = map(lambda tweet: tweet.entities['user_mentions'], self.tweets)
-		tweets_data['mentions'] = map(lambda mention: mention.screen_name, user_mentions)
+	def _get_mentioned_screen_names(self):
+		all_screen_names = []
+		for tweet in self.tweets:
+			screen_names = []
+			for user_mentions in tweet.entities['user_mentions']:
+				if not user_mentions['screen_name'] == self.user:
+					screen_names.append(user_mentions['screen_name'])
+			all_screen_names.extend(screen_names)
+		return all_screen_names
 
-		print 'Analyzing tweets by mentions\n'
+	def perform_action(self):
+		tweets_data = pd.DataFrame()
+		tweets_data['mentions'] = self._get_mentioned_screen_names()
+		num_of_entries_shown = 8
+		
 		tweets_by_mentions = tweets_data['mentions'].value_counts()
+		print tweets_by_mentions
 		fig, ax = plt.subplots()
 		ax.tick_params(axis='x', labelsize=10)
 		ax.tick_params(axis='y', labelsize=10)
-		ax.set_xlabel('Mentions', fontsize=10)
-		ax.set_ylabel('Number of tweets' , fontsize=10)
-		ax.set_title('Top 10 mentions', fontsize=10, fontweight='bold')
-		tweets_by_mentions[:10].plot(ax=ax, kind='bar', color='red')
-		plt.savefig('tweets_by_mentions', format='png')
+		ax.set_xlabel('Created by seitweetpy. Written by @ambidere', fontsize=10, fontproperties=self.fontProp)
+		ax.set_ylabel('Number of tweets' , fontsize=10, fontproperties=self.fontProp)
+		ax.set_title('Top %s mentions by user: %s\n as of %s' % (num_of_entries_shown, self.user, time.strftime("%m/%d/%Y %H:%M")), fontsize=10, fontweight='bold', fontproperties=self.fontProp)
+		tweets_by_mentions[:num_of_entries_shown].plot(ax=ax, kind='bar', color='#3498db')
+
+		for i, label in enumerate(list(tweets_by_mentions.index)):
+			total = tweets_by_mentions.ix[i]
+			ax.annotate(str(total), (i, total + 0.2))
+
+		plt.tight_layout()
+		plt.savefig('%s_tweets_by_mentions.png' % (self.user), format='png')
+
+class TopMentionsToAqoursAction(TweetActions):
+	"""retrieves top mentions to aqours twitters"""
+	name = "top_mentions_to_aqours"
+	AQOURS_TWITTERS = ['anju_inami', 'Rikako_Aida', 'suwananaka', 'box_komiyaarisa', 'Saito_Shuka', 'Aikyan_', 'Kanako_tktk', 'aina_suzuki723', 'furihata_ai']
+	def __init__(self, tweets, options, **kwargs):
+		super(TopMentionsToAqoursAction, self).__init__(tweets, options, **kwargs)
+		self.user = options.user
+		self.fontProp = fm.FontProperties(fname=os.path.abspath('./resources/default.otf'))
+
+	def assert_arguments_valid(self, options):
+		pass
+
+	def _get_mentioned_screen_names(self):
+		all_screen_names = []
+		for tweet in self.tweets:
+			screen_names = []
+			for user_mentions in tweet.entities['user_mentions']:
+				if not user_mentions['screen_name'] == self.user and user_mentions['screen_name'] in self.AQOURS_TWITTERS:
+					screen_names.append(user_mentions['screen_name'])
+			all_screen_names.extend(screen_names)
+		return all_screen_names
+
+	def perform_action(self):
+		tweets_data = pd.DataFrame()
+		tweets_data['mentions'] = self._get_mentioned_screen_names()
+		num_of_entries_shown = 8
+		
+		tweets_by_mentions = tweets_data['mentions'].value_counts()
+		print tweets_by_mentions
+		fig, ax = plt.subplots()
+		ax.tick_params(axis='x', labelsize=10)
+		ax.tick_params(axis='y', labelsize=10)
+		ax.set_xlabel('Created by seitweetpy. Written by @ambidere', fontsize=10, fontproperties=self.fontProp)
+		ax.set_ylabel('Number of tweets' , fontsize=10, fontproperties=self.fontProp)
+		ax.set_title('Top %s mentions by user: %s\n as of %s' % (num_of_entries_shown, self.user, time.strftime("%m/%d/%Y %H:%M")), fontsize=10, fontweight='bold', fontproperties=self.fontProp)
+		tweets_by_mentions[:num_of_entries_shown].plot(ax=ax, kind='bar', color='#3498db')
+
+		for i, label in enumerate(list(tweets_by_mentions.index)):
+			total = tweets_by_mentions.ix[i]
+			ax.annotate(str(total), (i, total + 0.2))
+
+		plt.tight_layout()
+		plt.savefig('%s_tweets_by_mentions_to_aqours.png' % (self.user), format='png')

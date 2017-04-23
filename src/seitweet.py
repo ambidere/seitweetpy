@@ -9,7 +9,7 @@ class SeiTweetFetcherApp(object):
 	def __init__(self, options):
 		super(SeiTweetFetcherApp, self).__init__()
 		self.auth_wrapper = TwitterAuthWrapper(options)
-		self.api = tweepy.API(self.auth_wrapper.get_twitter_auth(), wait_on_rate_limit=True)
+		self.api = tweepy.API(self.auth_wrapper.get_twitter_auth(), wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 		self.alltweets = []
 		if not hasattr(options, 'user'):
 			raise exceptions.InvalidArgumentsError('User was not passed')
