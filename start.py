@@ -6,13 +6,13 @@ import csv
 
 from optparse import OptionParser
 
-from src.seitweet import SeiTweetApp
+from src.seitweet import SeiTweetFetcherApp
 
 opt_parse = OptionParser()
 opt_parse.add_option("-c", "--credentials", dest="credentials_file",
-                  help="File containing credentials for Twitter API", metavar="FILE")
-opt_parse.add_option("-a", "--action", dest="action",
-                  help="Action", metavar="ACTION", default="default")
+                  help="File containing credentials for Twitter API", metavar="FILE", default="credentials.txt")
+opt_parse.add_option("-p", "--post_action", dest="post_actions",
+                  help="Action performed after tweets have been fetched", metavar="ACTION", default="csv")
 opt_parse.add_option("-u", "--user", dest="user",
                   help="User", metavar="TWITTER_USER")
 opt_parse.add_option("-o", "--output", dest="output",
@@ -25,5 +25,5 @@ opt_parse.add_option("-s", "--consumer_secret", dest="consumer_secret",
 (options, args) = opt_parse.parse_args()
 
 if __name__ == '__main__':
-    app = SeiTweetApp(options)
-    app.get_all_tweets(options.user).do_action()
+    app = SeiTweetFetcherApp(options)
+    app.do_action().then(options.post_actions)
