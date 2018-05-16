@@ -11,6 +11,8 @@ from src.seitweet import SeiTweetFetcherApp
 opt_parse = OptionParser()
 opt_parse.add_option("-c", "--credentials", dest="credentials_file",
                   help="File containing credentials for Twitter API", metavar="FILE", default="credentials.txt")
+opt_parse.add_option("-a", "--action", dest="action",
+                  help="Fetching action the system will perform", metavar="ACTION", default="all_tweets")
 opt_parse.add_option("-p", "--post_action", dest="post_actions",
                   help="Action performed after tweets have been fetched", metavar="ACTION", default="csv")
 opt_parse.add_option("-u", "--user", dest="user",

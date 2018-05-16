@@ -131,7 +131,7 @@ class TopMentionsAction(TweetActions):
 
 		for i, label in enumerate(list(tweets_by_mentions.index)):
 			total = tweets_by_mentions.ix[i]
-			ax.annotate(str(total), (i - 0.2, total + 0.2))
+			ax.annotate(str(total), (i - 0.1, total + 0.2))
 
 		plt.tight_layout()
 		plt.savefig(self.output, format='png')

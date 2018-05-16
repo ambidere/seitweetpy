@@ -1,0 +1,5 @@
+tweepy
+matplotlib
+pandas
+simplejson
+tinysegmenter
