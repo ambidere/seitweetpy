@@ -1,5 +1,5 @@
 import os, sys, inspect, csv, time
-import exceptions
+import builtins as exceptions
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ class TweetActions(object):
 	def __init__(self, tweets, options, **kwargs):
 		super(TweetActions, self).__init__()
 		self.tweets = tweets
-		for key, value in kwargs.iteritems():
+		for key, value in kwargs.items():
 			setattr(self, key, value)
 		self.assert_arguments_valid(options)
 
@@ -47,7 +47,7 @@ class JSONAction(TweetActions):
 			raise exceptions.InvalidArgumentsError('Output arguments must end with .json.')
 
 	def perform_action(self):
-		with open(self.output, 'wb') as json_file:
+		with open(self.output, 'w') as json_file:
 			for tweet in self.tweets:
 				json.dump(tweet._json, json_file, sort_keys = True, indent = 4)
 
@@ -60,7 +60,7 @@ class PrintCSVAction(TweetActions):
 		self.output = options.output
 		
 	def perform_action(self):
-		with open(self.output, 'wb') as f:
+		with open(self.output, 'w') as f:
 			writer = csv.writer(f)
 			writer.writerow(self.fields)
 			writer.writerows(self._build_csv_rows())
@@ -81,8 +81,8 @@ class PrintCSVAction(TweetActions):
 					if field == 'text':
 						value = value.encode('utf-8')
 					row.append(value)
-				except ValueError, e:
-					print "field not found"
+				except ValueError as e:
+					print("field not found")
 			rows.append(row)
 		return rows
 
@@ -120,7 +120,7 @@ class TopMentionsAction(TweetActions):
 		tweets_data['mentions'] = self.get_mentioned_screen_names()
 		
 		tweets_by_mentions = tweets_data['mentions'].value_counts()
-		print tweets_by_mentions
+		print(tweets_by_mentions)
 		fig, ax = plt.subplots()
 		ax.tick_params(axis='x', labelsize=10)
 		ax.tick_params(axis='y', labelsize=10)

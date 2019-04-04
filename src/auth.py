@@ -1,6 +1,6 @@
 import os, webbrowser, signal
 import tweepy
-import exceptions
+from src.exceptions import CredentialsFileFormatError, InvalidCredentialsError
 
 class TwitterAuthWrapper(object):
 	"""wrapper for twitter authorization"""
@@ -23,7 +23,7 @@ class TwitterAuthWrapper(object):
 				for line in c_file.read().splitlines():
 					self.process_line_in_file(line)
 		else:
-			raise exceptions.CredentialsFileFormatError('Credentials file is empty and none existing. Please create a credentials file with your Twitter app\'s consumer token.')
+			raise CredentialsFileFormatError('Credentials file is empty and none existing. Please create a credentials file with your Twitter app\'s consumer token.')
 		self.credentials_file = credentials_file
 
 	def process_line_in_file(self, line):
@@ -61,13 +61,13 @@ class TwitterAuthWrapper(object):
 				self.access_secret = self.auth.access_token_secret
 
 			except tweepy.TweepError:
-				print "Failed to get request token."
+				print("Failed to get request token.")
 		return (access_key, access_secret)
 
 	def retrieve_verification_code(self):
 		signal.signal(signal.SIGALRM, self.timeout_for_verify)
 		signal.alarm(15)
-		verify_code = raw_input('Enter verification code here: ')
+		verify_code = input('Enter verification code here: ')
 		signal.alarm(0)
 		self.auth.get_access_token(verify_code)
 

@@ -1,9 +1,9 @@
 import tweepy
-import exceptions
+import builtins as exceptions
 
-from auth import TwitterAuthWrapper
-from post_actions import get_post_action_class
-from fetch_actions import get_fetch_action_class
+from src.auth import TwitterAuthWrapper
+from src.post_actions import get_post_action_class
+from src.fetch_actions import get_fetch_action_class
 
 class SeiTweetFetcherApp(object):
 	"""Application that fetches Tweets of a specific user"""

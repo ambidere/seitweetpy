@@ -1,5 +1,5 @@
 import sys, inspect
-import exceptions
+import builtins as exceptions
 
 def get_fetch_action_class(action):
     for name, class_name in inspect.getmembers(sys.modules[__name__]):
@@ -29,7 +29,7 @@ class AllTweetsFetchActions(TweetFetchActions):
 
     def assert_options(self, options):
         if not hasattr(options, 'user'):
-			raise exceptions.InvalidArgumentsError('User was not passed')
+	        raise exceptions.InvalidArgumentsError('User was not passed')
 
     def do_fetch(self):
         user = self.user
@@ -39,11 +39,11 @@ class AllTweetsFetchActions(TweetFetchActions):
         alltweets.extend(new_tweets)
         oldest = alltweets[-1].id - 1
         
-        print '%s tweets fetched so far...' % (len(alltweets))
-        while len(new_tweets) > 0:
-			new_tweets = self.api.user_timeline(screen_name=user, count=200, max_id=oldest)
-			alltweets.extend(new_tweets)
-			oldest = alltweets[-1].id - 1
-			print '%s tweets fetched so far...' % (len(alltweets))
+        print(f'{len(alltweets)} tweets fetched so far...')
+        while (len(new_tweets) > 0):
+	        new_tweets = self.api.user_timeline(screen_name=user, count=200, max_id=oldest)
+	        alltweets.extend(new_tweets)
+	        oldest = alltweets[-1].id - 1
+	        print(f'{len(alltweets)} tweets fetched so far...')
         
         return alltweets
